@@ -1,0 +1,2 @@
+Windows[[:space:]]Compiled/**/*.exe filter=lfs diff=lfs merge=lfs -text
+Windows[[:space:]]Compiled/** filter=lfs diff=lfs merge=lfs -text
