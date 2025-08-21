@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project SLVL - Gaming Terminal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background: #0a0a1a;
+            color: #00ffcc;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #00ffcc;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px #00ffcc;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #ff00ff;
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+        
+        .terminal-container {
+            flex: 2;
+            background: rgba(0, 10, 20, 0.8);
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            padding: 10px;
+            background: #001122;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #00ffcc;
+        }
+        
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27c93f; }
+        
+        .terminal-title {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+        
+        .terminal-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #000d17;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .terminal-prompt {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .prompt-user {
+            color: #ff00ff;
+            margin-right: 5px;
+        }
+        
+        .prompt-location {
+            color: #00ffcc;
+            margin-right: 5px;
+        }
+        
+        .prompt-symbol {
+            color: #ffff00;
+            margin-right: 10px;
+        }
+        
+        .command-input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .output {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .success { color: #00ffcc; }
+        .error { color: #ff3366; }
+        .info { color: #3399ff; }
+        .warning { color: #ffcc00; }
+        
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .stats-box, .links-box {
+            background: rgba(0, 10, 20, 0.8);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .box-title {
+            color: #ff00ff;
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ff00ff;
+            font-size: 1.2rem;
+        }
+        
+        .stats-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .links-list {
+            list-style-type: none;
+        }
+        
+        .links-list li {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 5px;
+        }
+        
+        .links-list a {
+            color: #00ffcc;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+        
+        .links-list a:hover {
+            color: #ff00ff;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+            border-top: 2px solid #00ffcc;
+            color: #3399ff;
+        }
+        
+        .blinking-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ffcc;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .glowing-text {
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        .ascii-art {
+            line-height: 1.2;
+            font-family: monospace;
+            white-space: pre;
+            color: #ff00ff;
+            margin-bottom: 15px;
+        }
+        
+        /* Matrix rain effect background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .terminal-container, .sidebar {
+                flex: 1;
+            }
+            
+            .ascii-art {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <div class="container">
+        <header>
+            <h1 class="glowing-text">PROJECT SLVL</h1>
+            <div class="subtitle">A Launcher for Classic Steam Games</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="terminal-controls">
+                        <div class="control close"></div>
+                        <div class="control minimize"></div>
+                        <div class="control maximize"></div>
+                    </div>
+                    <div class="terminal-title">user@project-slvl: ~</div>
+                    <div></div> <!-- Spacer for flex alignment -->
+                </div>
+                
+                <div class="terminal-body" id="terminalBody">
+                    <div class="output info">Welcome to Project SLVL terminal. Type 'help' for available commands.</div>
+                    <div class="output success">System initialized successfully. Connection established.</div>
+                    <div class="output">Loading core modules... <span class="success">Done</span></div>
+                    <div class="output">Checking security... <span class="success">Secure</span></div>
+                    <div class="output">System time: <span id="systemTime"></span></div>
+                    <div class="output">---</div>
+                    
+                    <!-- Previous commands will be added here dynamically -->
+                    
+                    <div class="terminal-prompt">
+                        <span class="prompt-user">user@project-slvl</span>
+                        <span class="prompt-location">~</span>
+                        <span class="prompt-symbol">$</span>
+                        <input type="text" class="command-input" id="commandInput" autofocus>
+                        <span class="blinking-cursor"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="stats-box">
+                    <div class="box-title">SYSTEM STATUS</div>
+                    <div class="stats-content">
+                        <div class="stat-item">
+                            <span>CPU Usage:</span>
+                            <span class="info">42%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Memory:</span>
+                            <span class="info">64%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Network:</span>
+                            <span class="success">Stable</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Temperature:</span>
+                            <span class="warning">42°C</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Uptime:</span>
+                            <span class="info">12:34:56</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="links-box">
+                    <div class="box-title">QUICK LINKS</div>
+                    <ul class="links-list">
+                        <li><a href="https://github.com/EmadFahim134/Project-SLVL" target="_blank"><i class="fab fa-github"></i> GitHub Repository</a></li>
+                        <li><a href="#" id="releaseLink"><i class="fas fa-download"></i> Latest Release</a></li>
+                        <li><a href="#"><i class="fas fa-book"></i> Documentation</a></li>
+                        <li><a href="#"><i class="fas fa-bug"></i> Report Issue</a></li>
+                        <li><a href="#"><i class="fas fa-code-branch"></i> Contribute</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Project SLVL &copy; 2025 | Project_SLVL isnt affliated by Valve | Credits for https://down-cs.su for archiving these Games.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Matrix background effect
+        const matrixBg = document.getElementById('matrixBg');
+        const canvas = document.createElement('canvas');
+        matrixBg.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const letters = '01010101010101010101010101010101';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ffcc';
+            ctx.font = `${fontSize}px monospace`;
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        // Terminal functionality
+        const terminalBody = document.getElementById('terminalBody');
+        const commandInput = document.getElementById('commandInput');
+        const systemTime = document.getElementById('systemTime');
+        const releaseLink = document.getElementById('releaseLink');
+        
+        // Set release link
+        releaseLink.href = "https://github.com/EmadFahim134/Project-SLVL/releases";
+        
+        // Update system time
+        function updateTime() {
+            const now = new Date();
+            systemTime.textContent = now.toLocaleString();
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Command history
+        let commandHistory = [];
+        let historyIndex = -1;
+        
+        // Available commands
+        const commands = {
+            help: () => {
+                return `Available commands:<br>
+                - <span class="info">help</span>: Show this help message<br>
+                - <span class="info">clear</span>: Clear the terminal<br>
+                - <span class="info">status</span>: Show system status<br>
+                - <span class="info">github</span>: Open GitHub repository<br>
+                - <span class="info">about</span>: Show project information<br>
+                - <span class="info">time</span>: Display current system time<br>
+                - <span class="info">neofetch</span>: Display system information<br>
+                - <span class="info">demo</span>: Run Project SLVL demo<br>
+                - <span class="info">releases</span>: Show latest releases`;
+            },
+            clear: () => {
+                const outputs = terminalBody.querySelectorAll('.output, .terminal-prompt');
+                outputs.forEach(output => {
+                    if (output.classList.contains('terminal-prompt')) return;
+                    output.remove();
+                });
+                return '';
+            },
+            status: () => {
+                return `System status report:<br>
+                <span class="success">●</span> Core services: Operational<br>
+                <span class="success">●</span> Security: Enabled<br>
+                <span class="success">●</span> Memory: 64% available<br>
+                <span class="warning">●</span> Storage: 42% used<br>
+                <span class="success">●</span> Network: Connected`;
+            },
+            github: () => {
+                window.open('https://github.com/EmadFahim134/Project-SLVL', '_blank');
+                return 'Opening GitHub repository...';
+            },
+            about: () => {
+                return `Project SLVL - Advanced Gaming Terminal<br>
+                Version: 2.3.4<br>
+                Developer: Emad Fahim<br>
+                Description: A cybersecurity and gaming innovation project<br>
+                License: MIT`;
+            },
+            time: () => {
+                return `System time: ${new Date().toLocaleString()}`;
+            },
+            neofetch: () => {
+                const asciiArt = `
+<span class="ascii-art">
+${'░'.repeat(40)}
+<span class="info">          PROJECT SLVL</span>
+${'░'.repeat(40)}
+<span class="success">    OS: Project SLVL Terminal v2.3.4</span>
+<span class="warning">    Host: Cybernetic Gaming System</span>
+<span class="info">    Kernel: 5.15.0-76-generic</span>
+<span class="error">    Uptime: 12 hours, 34 mins</span>
+<span class="success">    Packages: 42 (pip)</span>
+<span class="warning">    Shell: bash 5.1.16</span>
+<span class="info">    Resolution: 1920x1080</span>
+<span class="error">    DE: GNOME 42.5</span>
+<span class="success">    WM: Mutter</span>
+<span class="warning">    WM Theme: Adwaita</span>
+<span class="info">    Terminal: Project SLVL Terminal</span>
+<span class="error">    CPU: Intel i7-12700K (16) @ 4.90GHz</span>
+<span class="success">    GPU: NVIDIA GeForce RTX 4070 Ti</span>
+<span class="warning">    Memory: 6421MiB / 15941MiB</span>
+${'░'.repeat(40)}
+</span>`;
+                return asciiArt;
+            },
+            demo: () => {
+                return `Running Project SLVL demo...<br>
+                <span class="output success">Initializing package check...</span><br>
+                <span class="output info">Checking for colorama... <span class="success">✓</span></span><br>
+                <span class="output info">Checking for tqdm... <span class="success">✓</span></span><br>
+                <span class="output info">Checking for requests... <span class="success">✓</span></span><br>
+                <span class="output info">Checking for bs4... <span class="success">✓</span></span><br>
+                <span class="output success">All packages are installed. Proceeding...</span><br>
+                <span class="output info">Loading game launcher...</span><br>
+                <span class="output warning">Downloading game data...</span><br>
+                <span class="output">██████████████████████ 100%</span><br>
+                <span class="output success">Demo completed successfully!</span><br>
+                <span class="output info">Type 'releases' to get the latest version`;
+            },
+            releases: () => {
+                return `Latest Project SLVL Releases:<br>
+                <br>
+                <span class="success">v2.3.4 (Current) - 2023-10-15</span><br>
+                - Added new terminal interface<br>
+                - Improved game compatibility<br>
+                - Fixed security vulnerabilities<br>
+                <br>
+                <span class="info">v2.2.1 - 2023-09-22</span><br>
+                - Added mod support<br>
+                - Enhanced performance<br>
+                <br>
+                <span class="warning">v2.1.0 - 2023-08-10</span><br>
+                - Initial public release<br>
+                - Basic game launcher functionality<br>
+                <br>
+                Download: <a href="https://github.com/EmadFahim134/Project-SLVL/releases" style="color: #00ffcc;">https://github.com/EmadFahim134/Project-SLVL/releases</a>`;
+            }
+        };
+        
+        // Handle command execution
+        commandInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = commandInput.value.trim();
+                commandInput.value = '';
+                
+                if (command) {
+                    // Add to history
+                    commandHistory.push(command);
+                    historyIndex = commandHistory.length;
+                    
+                    // Display the command
+                    const commandOutput = document.createElement('div');
+                    commandOutput.className = 'output';
+                    commandOutput.innerHTML = `<span class="prompt-user">user@project-slvl</span><span class="prompt-location">~</span><span class="prompt-symbol">$</span> ${command}`;
+                    terminalBody.insertBefore(commandOutput, terminalBody.lastElementChild);
+                    
+                    // Execute command
+                    let outputText = '';
+                    if (commands[command]) {
+                        outputText = commands[command]();
+                    } else {
+                        outputText = `<span class="error">Command not found: ${command}. Type 'help' for available commands.</span>`;
+                    }
+                    
+                    if (outputText) {
+                        const outputElement = document.createElement('div');
+                        outputElement.className = 'output';
+                        outputElement.innerHTML = outputText;
+                        terminalBody.insertBefore(outputElement, terminalBody.lastElementChild);
+                    }
+                    
+                    // Scroll to bottom
+                    terminalBody.scrollTop = terminalBody.scrollHeight;
+                }
+            } else if (e.key === 'ArrowUp') {
+                // Navigate command history up
+                e.preventDefault();
+                if (commandHistory.length > 0) {
+                    if (historyIndex > 0) historyIndex--;
+                    commandInput.value = commandHistory[historyIndex] || '';
+                }
+            } else if (e.key === 'ArrowDown') {
+                // Navigate command history down
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    commandInput.value = commandHistory[historyIndex] || '';
+                } else {
+                    historyIndex = commandHistory.length;
+                    commandInput.value = '';
+                }
+            }
+        });
+        
+        // Keep focus on input when clicking anywhere in terminal
+        terminalBody.addEventListener('click', () => {
+            commandInput.focus();
+        });
+        
+        // Initial help message
+        setTimeout(() => {
+            const helpOutput = document.createElement('div');
+            helpOutput.className = 'output info';
+            helpOutput.innerHTML = "Type 'help' to see available commands";
+            terminalBody.insertBefore(helpOutput, terminalBody.lastElementChild);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }, 3000);
+    </script>
+</body>
+</html>
